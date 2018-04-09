@@ -100,6 +100,18 @@ function testCanDetectWinnerAtFirstColumn {
     assert_that "$g" | is "Cross Nought None Cross Nought None Cross None None Nought Halt=CrossWins"
 }
 
+function testCanDetectWinnerAtSecondColumn {
+    local g
+    g=$(game | place Cross 0 1 | place Nought 0 0 | place Cross 1 1 | place Nought 1 0 | place Cross 2 1 | checkWinner) || return $?
+    assert_that "$g" | is "Nought Cross None Nought Cross None None Cross None Nought Halt=CrossWins"
+}
+
+function testCanDetectWinnerAtThirdColumn {
+    local g
+    g=$(game | place Cross 0 2 | place Nought 0 0 | place Cross 1 2 | place Nought 1 0 | place Cross 2 2 | checkWinner) || return $?
+    assert_that "$g" | is "Nought None Cross Nought None Cross None None Cross Nought Halt=CrossWins"
+}
+
 function checkWinner {
     local board=$(read_input)
     local arr
@@ -224,14 +236,78 @@ function sortVertically {
     local g
     g=$(read_input | take $((cells_per_side*cells_per_side)))
     local arr
+    local returnArr
     asArray arr <<< "$g"
-    echo "${arr[@]}"
+    for index in {0..8}; do
+       local item
+       item=${arr[$index]}
+       returnArr[$index]=$(sortItem $index ${arr[@]})
+    done
+    echo "${returnArr[@]}"
+}
+
+function sortItem {
+    local i
+    local arr
+    asArray arr <<< $(echo $@ | skip 1)
+    i=$1
+    if isMultipleOfFour $i; then
+        echo ${arr[$i]}
+        return 0
+    fi
+    if isEven $i; then
+        echo ${arr[$((8-$i))]}
+        return 0
+    fi
+    local lo4
+    local hi4
+    local sum
+    lo4=$(nearestLower4Multiple $i)
+    hi4=$(nearestHigher4Multiple $i)
+    sum=$(($lo4+$hi4))
+    echo ${arr[$(($sum-$i))]}
+}
+
+function nearestLower4Multiple {
+    echo $(($1/4*4))
+}
+
+function nearestHigher4Multiple {
+    echo $((($1+4-1)/4*4))
+}
+
+function isMultipleOfFour {
+    return $(($1%4))
+}
+
+function isEven {
+    return $(($1%2))
 }
 
 function testSortVertically {
     local g
     g=$(echo 0 1 2 3 4 5 6 7 8 | sortVertically 3) || return $?
     assert_that "$g" | is "0 3 6 1 4 7 2 5 8"
+}
+
+function testSortVerticallyAlpha {
+    local g
+    g=$(echo A B C D E F G H I | sortVertically 3) || return $?
+    assert_that "$g" | is "A D G B E H C F I"
+}
+
+function testFilterEven {
+    local g
+    g=$(echo 0 1 2 3 4 5 6 7 8 | filterEven) || return $?
+    assert_that "$g" | is "0 2 4 6 8"
+}
+
+function filterEven {
+    local g
+    local arr
+    g=$(read_input)
+    asArray arr <<< "$g"
+    echo ${arr[@]}
 }
 
 function test {
@@ -251,7 +327,11 @@ function test {
         testCanDetectWinnerAtSecondRow \
         testCanDetectWinnerAtThirdRow \
         testSortVertically \
-        testCanDetectWinnerAtFirstColumn
+        testSortVerticallyAlpha \
+        testCanDetectWinnerAtFirstColumn \
+        testCanDetectWinnerAtSecondColumn \
+        testCanDetectWinnerAtThirdColumn \
+        testFilterEven
 }
 
 test

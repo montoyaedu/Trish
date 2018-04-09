@@ -32,10 +32,13 @@ Work in progress. some tests are yet failing.
 [PASSED] - testCanDetectWinnerAtFirstRow
 [PASSED] - testCanDetectWinnerAtSecondRow
 [PASSED] - testCanDetectWinnerAtThirdRow
-expected '0 3 6 1 4 7 2 5 8' but got '0 1 2 3 4 5 6 7 8'
-[FAILED] - testSortVertically
-expected 'Cross Nought None Cross Nought None Cross None None Nought Halt=CrossWins' but got 'Cross Nought None Cross Nought None Cross None None Nought'
-[FAILED] - testCanDetectWinnerAtFirstColumn
+[PASSED] - testSortVertically
+[PASSED] - testSortVerticallyAlpha
+[PASSED] - testCanDetectWinnerAtFirstColumn
+[PASSED] - testCanDetectWinnerAtSecondColumn
+[PASSED] - testCanDetectWinnerAtThirdColumn
+expected '0 2 4 6 8' but got '0 1 2 3 4 5 6 7 8'
+[FAILED] - testFilterEven
 ```
 
 ## TODO:
