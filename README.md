@@ -37,12 +37,14 @@ Work in progress. some tests are yet failing.
 [PASSED] - testCanDetectWinnerAtFirstColumn
 [PASSED] - testCanDetectWinnerAtSecondColumn
 [PASSED] - testCanDetectWinnerAtThirdColumn
-expected '0 2 4 6 8' but got '0 1 2 3 4 5 6 7 8'
-[FAILED] - testFilterEven
+[PASSED] - testFilterEven
+[PASSED] - testCanDetectWinnerAtDiagonal1
+[PASSED] - testFilterMultipleOfFour
+[PASSED] - testCanDetectWinnerAtDiagonal2
 ```
 
 ## TODO:
 
-1. Fix failing tests.
-2. Document the process of analysis and implementation.
-3. Make a tutorial.
+1. Refactor code.
+1. Document the process of analysis and implementation.
+1. Make a tutorial.
