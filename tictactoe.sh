@@ -112,6 +112,18 @@ function testCanDetectWinnerAtThirdColumn {
     assert_that "$g" | is "Nought None Cross Nought None Cross None None Cross Nought Halt=CrossWins"
 }
 
+function testCanDetectWinnerAtDiagonal1 {
+    local g
+    g=$(game | place Cross 2 0 | place Nought 0 0 | place Cross 1 1 | place Nought 2 2 | place Cross 0 2 | checkWinner) || return $?
+    assert_that "$g" | is "Nought None Cross None Cross None Cross None Nought Nought Halt=CrossWins"
+}
+
+function testCanDetectWinnerAtDiagonal2 {
+    local g
+    g=$(game | place Cross 0 0 | place Nought 2 0 | place Cross 1 1 | place Nought 0 2 | place Cross 2 2 | checkWinner) || return $?
+    assert_that "$g" | is "Cross None Nought None Cross None Nought None Cross Nought Halt=CrossWins"
+}
+
 function checkWinner {
     local board=$(read_input)
     local arr
@@ -133,6 +145,18 @@ function checkWinner {
             break
         fi
     done
+    fi
+    if [ "$winner" == "$FALSE" ]; then
+        winner=$(echo $board | filterEven | skip 1 | take 3 | winner)
+        if [ "$winner" != "$FALSE" ]; then
+            arr[$MESSAGE_INDEX]="Halt=${winner}Wins"
+        fi
+    fi
+    if [ "$winner" == "$FALSE" ]; then
+        winner=$(echo $board | filterMultipleOfFour | winner)
+        if [ "$winner" != "$FALSE" ]; then
+            arr[$MESSAGE_INDEX]="Halt=${winner}Wins"
+        fi
     fi
     echo "${arr[@]}"
 }
@@ -166,17 +190,15 @@ function place {
 
 function take {
     local n=$1
-    local s=$(read_input)
     local arr
-    asArray arr <<< "$s"
+    asArray arr <<< $(read_input)
     echo ${arr[@]::$n}
 }
 
 function skip {
     local n=$1
-    local s=$(read_input)
     local arr
-    asArray arr <<< "$s"
+    asArray arr <<< $(read_input)
     echo ${arr[@]:$n}
 }
 
@@ -217,6 +239,10 @@ function testTake {
     local g
     g=$(echo AAA BBB CCC DDD | take 1) || return $?
     assert_that "$g" | is "AAA"
+    g=$(echo AAA BBB CCC DDD | take 3) || return $?
+    assert_that "$g" | is "AAA BBB CCC"
+    g=$(echo AAA BBB CCC DDD | take 4) || return $?
+    assert_that "$g" | is "AAA BBB CCC DDD"
 }
 
 function testWinner {
@@ -302,12 +328,34 @@ function testFilterEven {
     assert_that "$g" | is "0 2 4 6 8"
 }
 
+function testFilterMultipleOfFour {
+    local g
+    g=$(echo 0 1 2 3 4 5 6 7 8 | filterMultipleOfFour) || return $?
+    assert_that "$g" | is "0 4 8"
+}
+
+function filterMultipleOfFour {
+    local g
+    local arr
+    g=$(read_input)
+    asArray arr <<< "$g"
+    for index in {0..8}; do
+        if isMultipleOfFour $index; then
+            echo ${arr[$index]}
+        fi
+    done
+}
+
 function filterEven {
     local g
     local arr
     g=$(read_input)
     asArray arr <<< "$g"
-    echo ${arr[@]}
+    for index in {0..8}; do
+        if isEven $index; then
+            echo ${arr[$index]}
+        fi
+    done
 }
 
 function test {
@@ -331,7 +379,10 @@ function test {
         testCanDetectWinnerAtFirstColumn \
         testCanDetectWinnerAtSecondColumn \
         testCanDetectWinnerAtThirdColumn \
-        testFilterEven
+        testFilterEven \
+        testCanDetectWinnerAtDiagonal1 \
+        testFilterMultipleOfFour \
+        testCanDetectWinnerAtDiagonal2
 }
 
 test
