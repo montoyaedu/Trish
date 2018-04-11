@@ -8,6 +8,7 @@ readonly NOUGHT=O
 readonly ORDER=3
 readonly ROWS="$ORDER"
 readonly MESSAGE_INDEX=10
+readonly NEXT_PLAYER_INDEX=9
 readonly TRUE=true
 readonly FALSE=false
 
@@ -147,7 +148,7 @@ function play {
     local -r column="$3"
     local items
     asArray items <<< "$board"
-    local expectedPlayer="${items[9]}"
+    local expectedPlayer="${items[$NEXT_PLAYER_INDEX]}"
     if [ -z "$expectedPlayer" ]; then
         expectedPlayer=$(nextPlayer "$expectedPlayer")
     fi
@@ -163,7 +164,7 @@ function play {
         return 1;
     fi
     items[$ROWS*$row+$column]="$player"
-    items[9]=$(nextPlayer "$player")
+    items["$NEXT_PLAYER_INDEX"]=$(nextPlayer "$player")
     echo "${items[@]}"
 }
 
