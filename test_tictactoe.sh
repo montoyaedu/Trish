@@ -104,11 +104,11 @@ function testSortVerticallyAlpha {
 }
 
 function testFilterEven {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filterEven) | is "0 2 4 6 8"
+    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filter isEven) | is "0 2 4 6 8"
 }
 
 function testFilterMultipleOfFour {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filterMultipleOfFour) | is "0 4 8"
+    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filter isMultipleOfFour) | is "0 4 8"
 }
 
 function testCount {

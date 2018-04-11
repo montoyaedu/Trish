@@ -22,8 +22,8 @@ function nextPlayer {
 function checkWinner {
     local -r board=$(read_input)
     local -r board_sorted_vertically=$(echo "$board" | sortVertically)
-    local -r diag1=$(echo "$board" | filterEven | skip 1 | take 3)
-    local -r diag2=$(echo "$board" | filterMultipleOfFour)
+    local -r diag1=$(echo "$board" | filter isEven | skip 1 | take 3)
+    local -r diag2=$(echo "$board" | filter isMultipleOfFour)
     echo $(echo "$board $board_sorted_vertically $diag1 $diag2" | winner)
 }
 
@@ -128,24 +128,12 @@ function isEven {
     return $(($1%2))
 }
 
-function filterMultipleOfFour {
+function filter {
     local arr
     local returnArr
     asArray arr <<< $(read_input)
     for index in {0..8}; do
-        if isMultipleOfFour "$index"; then
-            returnArr+=("${arr[$index]}")
-        fi
-    done
-    echo ${returnArr[@]}
-}
-
-function filterEven {
-    local arr
-    local returnArr
-    asArray arr <<< $(read_input)
-    for index in {0..8}; do
-        if isEven "$index"; then
+        if $(eval "$1" "$index"); then
             returnArr+=("${arr[$index]}")
         fi
     done
