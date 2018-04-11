@@ -1,7 +1,4 @@
 #!/bin/bash
-readonly DIRNAME=/usr/bin/dirname
-. $("$DIRNAME" "$0")/test_tools.sh
-test
 readonly NONE=_
 readonly CROSS=1
 readonly NOUGHT=2
@@ -23,80 +20,6 @@ function nextPlayer {
     # if number of placed figures are equal is X turn otherwise is O turn
     local -r board=$(read_input)
     when $(($(echo "$board" | count "$CROSS")==$(echo "$board" | count "$NOUGHT"))) | trueFalse "echo $CROSS" "echo $NOUGHT"
-}
-
-function testCanCreateGame {
-    assert_that $(game) | is "_ _ _ _ _ _ _ _ _"
-}
-
-function testCanPlaceCross {
-    assert_that $(game | play 1 0 0) | is "1 _ _ _ _ _ _ _ _"
-}
-
-function testCanPlaceNoughtAfterCross {
-    assert_that $(game | play 1 0 0 | play 2 1 1) | is "1 _ _ _ 2 _ _ _ _"
-}
-
-function testCannotPlaceCrossTwice {
-    assert_that $(game | play 1 0 0 | play 1 1 1) \
-    | is "1 _ _ _ _ _ _ _ _ ItsNotYourTurn"
-}
-
-function testCannotPlaceNoughtIntoAnOccupiedSpace {
-    assert_that $(game | play 1 0 0 | play 2 0 0) \
-    | is "1 _ _ _ _ _ _ _ _ PlaceOccupied"
-}
-
-function testInitialNextPlayer {
-    assert_that $(echo _ _ _ _ _ _ _ _ _ | nextPlayer) | is "1"
-}
-
-function testNextPlayerAfterCross {
-    assert_that $(echo 1 _ _ _ _ _ _ _ _ | nextPlayer) | is "2"
-}
-
-function testNextPlayerAfterNought {
-    assert_that $(echo 1 2 _ _ _ _ _ _ _ | nextPlayer) | is "1"
-}
-
-function testCanDetectWinnerAtFirstRow {
-    assert_that $(game | play 1 0 0 | play 2 1 0 | play 1 0 1 | play 2 1 1 | play 1 0 2 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtSecondRow {
-    assert_that $(game | play 1 1 0 | play 2 0 0 | play 1 1 1 | play 2 0 1 | play 1 1 2 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtThirdRow {
-    assert_that $(game | play 1 2 0 | play 2 0 0 | play 1 2 1 | play 2 0 1 | play 1 2 2 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtFirstColumn {
-    assert_that $(game | play 1 0 0 | play 2 0 1 | play 1 1 0 | play 2 1 1 | play 1 2 0 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtSecondColumn {
-    assert_that $(game | play 1 0 1 | play 2 0 0 | play 1 1 1 | play 2 1 0 | play 1 2 1 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtThirdColumn {
-    assert_that $(game | play 1 0 2 | play 2 0 0 | play 1 1 2 | play 2 1 0 | play 1 2 2 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtDiagonal1 {
-    assert_that $(game | play 1 2 0 | play 2 0 0 | play 1 1 1 | play 2 2 2 | play 1 0 2 | checkWinner) \
-    | is 1
-}
-
-function testCanDetectWinnerAtDiagonal2 {
-    assert_that $(game | play 1 0 0 | play 2 2 0 | play 1 1 1 | play 2 0 2 | play 1 2 2 | checkWinner) \
-    | is 1
 }
 
 function checkWinner {
@@ -163,24 +86,6 @@ function winner {
     return 0
 }
 
-function testSkip {
-    assert_that $(echo AAA BBB CCC DDD | skip 1) | is "BBB CCC DDD"
-    assert_that $(echo AAA BBB CCC DDD | skip 3) | is "DDD"
-}
-
-function testTake {
-    assert_that $(echo AAA BBB CCC DDD | take 1) | is "AAA"
-    assert_that $(echo AAA BBB CCC DDD | take 3) | is "AAA BBB CCC"
-    assert_that $(echo AAA BBB CCC DDD | take 4) | is "AAA BBB CCC DDD"
-}
-
-function testWinner {
-    assert_that $(echo _ _ _ | winner) | is '' && \
-    assert_that $(echo _ 1 1 | winner) | is '' && \
-    assert_that $(echo 1 1 1 | winner) | is 1 && \
-    assert_that $(echo 2 2 2 | winner) | is 2
-}
-
 function sortVertically {
     local -r cells_per_side="$1"
     local -r g=$(read_input | take $(($cells_per_side*$cells_per_side)))
@@ -228,22 +133,6 @@ function isEven {
     return $(($1%2))
 }
 
-function testSortVertically {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | sortVertically 3) | is "0 3 6 1 4 7 2 5 8"
-}
-
-function testSortVerticallyAlpha {
-    assert_that $(echo A B C D E F G H I | sortVertically 3) | is "A D G B E H C F I"
-}
-
-function testFilterEven {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filterEven) | is "0 2 4 6 8"
-}
-
-function testFilterMultipleOfFour {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | filterMultipleOfFour) | is "0 4 8"
-}
-
 function filterMultipleOfFour {
     local arr
     local returnArr
@@ -281,19 +170,6 @@ function count {
     echo "$count"
 }
 
-function testCount {
-    assert_that $(echo A A B B C C | count A) | is 2 && \
-    assert_that $(echo A A B B C C | count D) | is 0
-}
-
-function testWhenFalse {
-    assert_that "$(when 1)" | is 0
-}
-
-function testWhenTrue {
-    assert_that "$(when 0)" | is 1
-}
-
 function when {
     echo $(($1==0))
     return 0
@@ -302,40 +178,3 @@ function when {
 function trueFalse {
     if [[ $(read_input) -eq 0 ]]; then eval "$1"; else eval "$2"; fi
 }
-
-function testTrueFalse {
-    assert_that $(echo 0 | trueFalse "echo A" "echo B") | is A
-}
-
-function test {
-    test_all \
-        testTrueFalse \
-        testWhenTrue \
-        testWhenFalse \
-        testCanCreateGame \
-        testCanPlaceCross \
-        testCount \
-        testInitialNextPlayer \
-        testNextPlayerAfterCross \
-        testNextPlayerAfterNought \
-        testCannotPlaceCrossTwice \
-        testCanPlaceNoughtAfterCross \
-        testCannotPlaceNoughtIntoAnOccupiedSpace \
-        testSkip \
-        testTake \
-        testWinner \
-        testCanDetectWinnerAtFirstRow \
-        testCanDetectWinnerAtSecondRow \
-        testCanDetectWinnerAtThirdRow \
-        testSortVertically \
-        testSortVerticallyAlpha \
-        testCanDetectWinnerAtFirstColumn \
-        testCanDetectWinnerAtSecondColumn \
-        testCanDetectWinnerAtThirdColumn \
-        testFilterEven \
-        testCanDetectWinnerAtDiagonal1 \
-        testFilterMultipleOfFour \
-        testCanDetectWinnerAtDiagonal2
-}
-
-test

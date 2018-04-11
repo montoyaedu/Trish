@@ -69,3 +69,5 @@ function test {
        id_should_return_input_number \
        can_compare_multiple_word_strings
 }
+
+test
