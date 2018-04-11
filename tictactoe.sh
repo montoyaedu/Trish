@@ -23,11 +23,7 @@ function game {
 function nextPlayer {
     # if number of placed figures are equal is X turn otherwise is O turn
     local -r board=$(read_input)
-    if [ $(echo "$board" | count "$CROSS") -eq $(echo "$board" | count "$NOUGHT") ]; then
-        echo "$CROSS"
-    else
-        echo "$NOUGHT"
-    fi
+    when $(($(echo "$board" | count "$CROSS")==$(echo "$board" | count "$NOUGHT"))) | trueFalse "$CROSS" "$NOUGHT"
 }
 
 function testCanCreateGame {
@@ -325,8 +321,31 @@ function testCount {
     assert_that $(echo A A B B C C | count D) | is 0
 }
 
+function testWhenFalse {
+    assert_that "$(when 1)" | is 0
+}
+
+function testWhenTrue {
+    assert_that "$(when 0)" | is 1
+}
+
+function when {
+    echo $(($1==0))
+}
+
+function trueFalse {
+    if [[ $(read_input) -eq 0 ]]; then echo $1; else echo $2; fi
+}
+
+function testTrueFalse {
+    assert_that $(echo 0 | trueFalse A B) | is A
+}
+
 function test {
     test_all \
+        testTrueFalse \
+        testWhenTrue \
+        testWhenFalse \
         testCanCreateGame \
         testCanPlaceCross \
         testCount \
