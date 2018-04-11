@@ -153,16 +153,7 @@ function filterEven {
 }
 
 function count {
-    local arr
-    asArray arr <<< $(read_input)
-    local count=0
-    declare value
-    for value in ${arr[@]}; do
-        if [[ "$value" == "$1" ]]; then
-            count=$((count+1))
-        fi
-    done
-    echo "$count"
+    echo $(read_input | ${GREP} -o $1 | ${WC} -l)
 }
 
 function when {

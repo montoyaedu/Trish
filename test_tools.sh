@@ -1,6 +1,7 @@
 #!/bin/bash
 readonly CAT=$(which cat)
 readonly GREP=$(which grep)
+readonly WC=$(which wc)
 readonly PATH=
 function desc {
     if [ "$1" == "0" ]; then
