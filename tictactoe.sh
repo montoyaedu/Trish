@@ -104,7 +104,7 @@ function checkWinner {
     local -r board_sorted_vertically=$(echo "$board" | sortVertically "$ORDER")
     local -r diag1=$(echo "$board" | filterEven | skip 1 | take 3)
     local -r diag2=$(echo "$board" | filterMultipleOfFour)
-    echo $(echo "$board" | winner)
+    echo $(echo "$board $board_sorted_vertically $diag1 $diag2" | winner)
 }
 
 function play {
@@ -144,23 +144,23 @@ function skip {
 }
 
 function winner {
-    local -r s=$(read_input | take $ORDER)
-    local arr
-    asArray arr <<< "$s"
-    local -r head="${arr[0]}"
-    local tail
-    asArray tail <<< "${arr[@]:1}"
+    local -r orig=$(read_input)
+    local -r s=$(echo "$orig" | take $ORDER)
+    local -r head=$(echo "$s" | take 1)
     if [ "$head" == "$NONE" ]; then
-        echo $(echo $s | skip $ORDER | winner)
-    else
-        for i in "${tail[@]}"; do
-            if [ "$i" != "$head" ]; then
-                echo $(echo $s | skip $ORDER | winner)
-            fi
-        done
-        echo "$head"
+        echo $(echo $orig | skip $ORDER | winner)
+        return 1
     fi
-    echo $(echo $s | skip $ORDER | winner)
+    local tail
+    asArray tail <<< $(echo $s | skip 1)
+    for i in "${tail[@]}"; do
+        if [ "$i" != "$head" ]; then
+            echo $(echo $orig | skip $ORDER | winner)
+            return 1
+        fi
+    done
+    echo "$head"
+    return 0
 }
 
 function testSkip {
@@ -175,9 +175,9 @@ function testTake {
 }
 
 function testWinner {
-    assert_that $(echo _ _ _ | winner) | is 0
-    assert_that $(echo _ 1 1 | winner) | is 0
-    assert_that $(echo 1 1 1 | winner) | is 1
+    assert_that $(echo _ _ _ | winner) | is '' && \
+    assert_that $(echo _ 1 1 | winner) | is '' && \
+    assert_that $(echo 1 1 1 | winner) | is 1 && \
     assert_that $(echo 2 2 2 | winner) | is 2
 }
 
