@@ -1,6 +1,7 @@
 #!/bin/bash
+readonly CAT=$(which cat)
+readonly GREP=$(which grep)
 readonly PATH=
-readonly CAT=/bin/cat
 function desc {
     if [ "$1" == "0" ]; then
         echo "PASSED"
