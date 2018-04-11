@@ -37,7 +37,7 @@ function is {
     if [ "${actual}" == "${expected}" ]; then
         return 0
     else
-        echo "expected '${expected}' but got '${actual}'"
+        $(>&2 echo "expected '${expected}' but got '${actual}'")
         return 1
     fi
 }
