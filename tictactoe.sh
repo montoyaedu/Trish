@@ -23,7 +23,7 @@ function game {
 function nextPlayer {
     # if number of placed figures are equal is X turn otherwise is O turn
     local -r board=$(read_input)
-    when $(($(echo "$board" | count "$CROSS")==$(echo "$board" | count "$NOUGHT"))) | trueFalse "$CROSS" "$NOUGHT"
+    when $(($(echo "$board" | count "$CROSS")==$(echo "$board" | count "$NOUGHT"))) | trueFalse "echo $CROSS" "echo $NOUGHT"
 }
 
 function testCanCreateGame {
@@ -334,11 +334,11 @@ function when {
 }
 
 function trueFalse {
-    if [[ $(read_input) -eq 0 ]]; then echo $1; else echo $2; fi
+    if [[ $(read_input) -eq 0 ]]; then eval "$1"; else eval "$2"; fi
 }
 
 function testTrueFalse {
-    assert_that $(echo 0 | trueFalse A B) | is A
+    assert_that $(echo 0 | trueFalse "echo A" "echo B") | is A
 }
 
 function test {
