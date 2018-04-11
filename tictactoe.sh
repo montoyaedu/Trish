@@ -44,12 +44,12 @@ function testCanPlaceNoughtAfterCross {
 
 function testCannotPlaceCrossTwice {
     assert_that $(game | play X 0 0 | play X 1 1) \
-    | is "X _ _ _ _ _ _ _ _ Error=ItsNotYourTurn"
+    | is "X _ _ _ _ _ _ _ _ ItsNotYourTurn"
 }
 
 function testCannotPlaceNoughtIntoAnOccupiedSpace {
     assert_that $(game | play X 0 0 | play O 0 0) \
-    | is "X _ _ _ _ _ _ _ _ Error=PlaceOccupied"
+    | is "X _ _ _ _ _ _ _ _ PlaceOccupied"
 }
 
 function testInitialNextPlayer {
@@ -66,42 +66,42 @@ function testNextPlayerAfterNought {
 
 function testCanDetectWinnerAtFirstRow {
     assert_that $(game | play X 0 0 | play O 1 0 | play X 0 1 | play O 1 1 | play X 0 2 | checkWinner)  \
-    | is "X X X O O _ _ _ _ Halt=XWins"
+    | is "X X X O O _ _ _ _ XWins"
 }
 
 function testCanDetectWinnerAtSecondRow {
     assert_that $(game | play X 1 0 | play O 0 0 | play X 1 1 | play O 0 1 | play X 1 2 | checkWinner) \
-    | is "O O _ X X X _ _ _ Halt=XWins"
+    | is "O O _ X X X _ _ _ XWins"
 }
 
 function testCanDetectWinnerAtThirdRow {
     assert_that $(game | play X 2 0 | play O 0 0 | play X 2 1 | play O 0 1 | play X 2 2 | checkWinner) \
-    | is "O O _ _ _ _ X X X Halt=XWins"
+    | is "O O _ _ _ _ X X X XWins"
 }
 
 function testCanDetectWinnerAtFirstColumn {
     assert_that $(game | play X 0 0 | play O 0 1 | play X 1 0 | play O 1 1 | play X 2 0 | checkWinner) \
-    | is "X O _ X O _ X _ _ Halt=XWins"
+    | is "X O _ X O _ X _ _ XWins"
 }
 
 function testCanDetectWinnerAtSecondColumn {
     assert_that $(game | play X 0 1 | play O 0 0 | play X 1 1 | play O 1 0 | play X 2 1 | checkWinner) \
-    | is "O X _ O X _ _ X _ Halt=XWins"
+    | is "O X _ O X _ _ X _ XWins"
 }
 
 function testCanDetectWinnerAtThirdColumn {
     assert_that $(game | play X 0 2 | play O 0 0 | play X 1 2 | play O 1 0 | play X 2 2 | checkWinner) \
-    | is "O _ X O _ X _ _ X Halt=XWins"
+    | is "O _ X O _ X _ _ X XWins"
 }
 
 function testCanDetectWinnerAtDiagonal1 {
     assert_that $(game | play X 2 0 | play O 0 0 | play X 1 1 | play O 2 2 | play X 0 2 | checkWinner) \
-    | is "O _ X _ X _ X _ O Halt=XWins"
+    | is "O _ X _ X _ X _ O XWins"
 }
 
 function testCanDetectWinnerAtDiagonal2 {
     assert_that $(game | play X 0 0 | play O 2 0 | play X 1 1 | play O 0 2 | play X 2 2 | checkWinner) \
-    | is "X _ O _ X _ O _ X Halt=XWins"
+    | is "X _ O _ X _ O _ X XWins"
 }
 
 function checkWinner {
@@ -112,7 +112,7 @@ function checkWinner {
     for index in {0..2}; do
         winner=$(echo "$board" | skip $(($index*$ORDER)) | take "$ORDER" | winner)
         if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="Halt=${winner}Wins"
+            arr["$MESSAGE_INDEX"]="${winner}Wins"
             break
         fi
     done
@@ -121,7 +121,7 @@ function checkWinner {
     for index in {0..2}; do
         winner=$(echo $board_sorted_vertically | skip $(($index*$ORDER)) | take "$ORDER" | winner)
         if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="Halt=${winner}Wins"
+            arr["$MESSAGE_INDEX"]="${winner}Wins"
             break
         fi
     done
@@ -129,13 +129,13 @@ function checkWinner {
     if [ "$winner" == "$FALSE" ]; then
         winner=$(echo "$board" | filterEven | skip 1 | take 3 | winner)
         if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="Halt=${winner}Wins"
+            arr["$MESSAGE_INDEX"]="${winner}Wins"
         fi
     fi
     if [ "$winner" == "$FALSE" ]; then
         winner=$(echo "$board" | filterMultipleOfFour | winner)
         if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="Halt=${winner}Wins"
+            arr["$MESSAGE_INDEX"]="${winner}Wins"
         fi
     fi
     echo "${arr[@]}"
@@ -149,13 +149,13 @@ function play {
     local items
     asArray items <<< "$board"
     if [ "$player" != $(echo "$board" | nextPlayer) ]; then
-        items["$MESSAGE_INDEX"]="Error=ItsNotYourTurn"
+        items["$MESSAGE_INDEX"]="ItsNotYourTurn"
         echo "${items[@]}"
         return 1;
     fi
     local -r value="${items[$ROWS*$row+$column]}"
     if [ "$value" != "$NONE" ]; then
-        items["$MESSAGE_INDEX"]="Error=PlaceOccupied"
+        items["$MESSAGE_INDEX"]="PlaceOccupied"
         echo ${items[@]}
         return 1;
     fi
