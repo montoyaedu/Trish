@@ -26,7 +26,7 @@ function id {
 }
 
 function read_input {
-    ${CAT} -
+    "${CAT}" -
 }
 
 function is {
@@ -45,7 +45,7 @@ function is {
 function assert_that {
     local actual
     eval actual="\${@}"
-    echo $actual
+    echo "$actual"
 }
 
 function id_should_return_input_number {
@@ -59,7 +59,7 @@ function id_should_return_input_string {
 function test_all {
     local tests=( "$@" )
     for i in "${tests[@]}"; do
-        eval $i
+        eval "$i"
         echo "[`desc $?`] - $i"
     done
 }
