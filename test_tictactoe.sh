@@ -17,12 +17,12 @@ function testCanPlaceNoughtAfterCross {
 
 function testCannotPlaceCrossTwice {
     assert_that $(game | play 1 0 0 | play 1 1 1) \
-    | is "1 _ _ _ _ _ _ _ _ ItsNotYourTurn"
+    | is "1 _ _ _ _ _ _ _ _"
 }
 
 function testCannotPlaceNoughtIntoAnOccupiedSpace {
     assert_that $(game | play 1 0 0 | play 2 0 0) \
-    | is "1 _ _ _ _ _ _ _ _ PlaceOccupied"
+    | is "1 _ _ _ _ _ _ _ _"
 }
 
 function testInitialNextPlayer {
@@ -96,11 +96,11 @@ function testWinner {
 }
 
 function testSortVertically {
-    assert_that $(echo 0 1 2 3 4 5 6 7 8 | sortVertically 3) | is "0 3 6 1 4 7 2 5 8"
+    assert_that $(echo 0 1 2 3 4 5 6 7 8 | sortVertically) | is "0 3 6 1 4 7 2 5 8"
 }
 
 function testSortVerticallyAlpha {
-    assert_that $(echo A B C D E F G H I | sortVertically 3) | is "A D G B E H C F I"
+    assert_that $(echo A B C D E F G H I | sortVertically) | is "A D G B E H C F I"
 }
 
 function testFilterEven {

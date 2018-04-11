@@ -3,7 +3,6 @@ readonly NONE=_
 readonly CROSS=1
 readonly NOUGHT=2
 readonly ORDER=3
-readonly MESSAGE_INDEX=9
 
 function asArray {
     local -r IFS=' '
@@ -22,7 +21,7 @@ function nextPlayer {
 
 function checkWinner {
     local -r board=$(read_input)
-    local -r board_sorted_vertically=$(echo "$board" | sortVertically "$ORDER")
+    local -r board_sorted_vertically=$(echo "$board" | sortVertically)
     local -r diag1=$(echo "$board" | filterEven | skip 1 | take 3)
     local -r diag2=$(echo "$board" | filterMultipleOfFour)
     echo $(echo "$board $board_sorted_vertically $diag1 $diag2" | winner)
@@ -36,14 +35,14 @@ function play {
     local items
     asArray items <<< "$board"
     if [ "$player" != $(echo "$board" | nextPlayer) ]; then
-        items["$MESSAGE_INDEX"]="ItsNotYourTurn"
         echo "${items[@]}"
+        $(>&2 echo "Not your turn")
         return 1;
     fi
     local -r value="${items[$ORDER*$row+$column]}"
     if [ "$value" != "$NONE" ]; then
-        items["$MESSAGE_INDEX"]="PlaceOccupied"
         echo ${items[@]}
+        $(>&2 echo "Place is not available")
         return 1;
     fi
     items[$ORDER*$row+$column]="$player"
@@ -85,11 +84,9 @@ function winner {
 }
 
 function sortVertically {
-    local -r cells_per_side="$1"
-    local -r g=$(read_input | take $(($cells_per_side*$cells_per_side)))
     local arr
     local returnArr
-    asArray arr <<< "$g"
+    asArray arr <<< $(read_input | take $(($ORDER*$ORDER)))
     for index in {0..8}; do
        local item="${arr[$index]}"
        returnArr["$index"]=$(sortItem "$index" "${arr[@]}")
