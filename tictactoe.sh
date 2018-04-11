@@ -3,13 +3,12 @@ readonly DIRNAME=/usr/bin/dirname
 . $("$DIRNAME" "$0")/test_tools.sh
 test
 readonly NONE=_
-readonly CROSS=X
-readonly NOUGHT=O
+readonly CROSS=1
+readonly NOUGHT=2
 readonly ORDER=3
 readonly ROWS="$ORDER"
 readonly MESSAGE_INDEX=9
-readonly TRUE=true
-readonly FALSE=false
+readonly FALSE=0
 
 function asArray {
     local -r IFS=' '
@@ -31,110 +30,81 @@ function testCanCreateGame {
 }
 
 function testCanPlaceCross {
-    assert_that $(game | play X 0 0) | is "X _ _ _ _ _ _ _ _"
+    assert_that $(game | play 1 0 0) | is "1 _ _ _ _ _ _ _ _"
 }
 
 function testCanPlaceNoughtAfterCross {
-    assert_that $(game | play X 0 0 | play O 1 1) | is "X _ _ _ O _ _ _ _"
+    assert_that $(game | play 1 0 0 | play 2 1 1) | is "1 _ _ _ 2 _ _ _ _"
 }
 
 function testCannotPlaceCrossTwice {
-    assert_that $(game | play X 0 0 | play X 1 1) \
-    | is "X _ _ _ _ _ _ _ _ ItsNotYourTurn"
+    assert_that $(game | play 1 0 0 | play 1 1 1) \
+    | is "1 _ _ _ _ _ _ _ _ ItsNotYourTurn"
 }
 
 function testCannotPlaceNoughtIntoAnOccupiedSpace {
-    assert_that $(game | play X 0 0 | play O 0 0) \
-    | is "X _ _ _ _ _ _ _ _ PlaceOccupied"
+    assert_that $(game | play 1 0 0 | play 2 0 0) \
+    | is "1 _ _ _ _ _ _ _ _ PlaceOccupied"
 }
 
 function testInitialNextPlayer {
-    assert_that $(echo _ _ _ _ _ _ _ _ _ | nextPlayer) | is "X"
+    assert_that $(echo _ _ _ _ _ _ _ _ _ | nextPlayer) | is "1"
 }
 
 function testNextPlayerAfterCross {
-    assert_that $(echo X _ _ _ _ _ _ _ _ | nextPlayer) | is "O"
+    assert_that $(echo 1 _ _ _ _ _ _ _ _ | nextPlayer) | is "2"
 }
 
 function testNextPlayerAfterNought {
-    assert_that $(echo X O _ _ _ _ _ _ _ | nextPlayer) | is "X"
+    assert_that $(echo 1 2 _ _ _ _ _ _ _ | nextPlayer) | is "1"
 }
 
 function testCanDetectWinnerAtFirstRow {
-    assert_that $(game | play X 0 0 | play O 1 0 | play X 0 1 | play O 1 1 | play X 0 2 | checkWinner)  \
-    | is "X X X O O _ _ _ _ XWins"
+    assert_that $(game | play 1 0 0 | play 2 1 0 | play 1 0 1 | play 2 1 1 | play 1 0 2 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtSecondRow {
-    assert_that $(game | play X 1 0 | play O 0 0 | play X 1 1 | play O 0 1 | play X 1 2 | checkWinner) \
-    | is "O O _ X X X _ _ _ XWins"
+    assert_that $(game | play 1 1 0 | play 2 0 0 | play 1 1 1 | play 2 0 1 | play 1 1 2 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtThirdRow {
-    assert_that $(game | play X 2 0 | play O 0 0 | play X 2 1 | play O 0 1 | play X 2 2 | checkWinner) \
-    | is "O O _ _ _ _ X X X XWins"
+    assert_that $(game | play 1 2 0 | play 2 0 0 | play 1 2 1 | play 2 0 1 | play 1 2 2 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtFirstColumn {
-    assert_that $(game | play X 0 0 | play O 0 1 | play X 1 0 | play O 1 1 | play X 2 0 | checkWinner) \
-    | is "X O _ X O _ X _ _ XWins"
+    assert_that $(game | play 1 0 0 | play 2 0 1 | play 1 1 0 | play 2 1 1 | play 1 2 0 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtSecondColumn {
-    assert_that $(game | play X 0 1 | play O 0 0 | play X 1 1 | play O 1 0 | play X 2 1 | checkWinner) \
-    | is "O X _ O X _ _ X _ XWins"
+    assert_that $(game | play 1 0 1 | play 2 0 0 | play 1 1 1 | play 2 1 0 | play 1 2 1 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtThirdColumn {
-    assert_that $(game | play X 0 2 | play O 0 0 | play X 1 2 | play O 1 0 | play X 2 2 | checkWinner) \
-    | is "O _ X O _ X _ _ X XWins"
+    assert_that $(game | play 1 0 2 | play 2 0 0 | play 1 1 2 | play 2 1 0 | play 1 2 2 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtDiagonal1 {
-    assert_that $(game | play X 2 0 | play O 0 0 | play X 1 1 | play O 2 2 | play X 0 2 | checkWinner) \
-    | is "O _ X _ X _ X _ O XWins"
+    assert_that $(game | play 1 2 0 | play 2 0 0 | play 1 1 1 | play 2 2 2 | play 1 0 2 | checkWinner) \
+    | is 1
 }
 
 function testCanDetectWinnerAtDiagonal2 {
-    assert_that $(game | play X 0 0 | play O 2 0 | play X 1 1 | play O 0 2 | play X 2 2 | checkWinner) \
-    | is "X _ O _ X _ O _ X XWins"
+    assert_that $(game | play 1 0 0 | play 2 2 0 | play 1 1 1 | play 2 0 2 | play 1 2 2 | checkWinner) \
+    | is 1
 }
 
 function checkWinner {
     local -r board=$(read_input)
-    local arr
-    asArray arr <<< "$board"
-    local winner
-    for index in {0..2}; do
-        winner=$(echo "$board" | skip $(($index*$ORDER)) | take "$ORDER" | winner)
-        if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="${winner}Wins"
-            break
-        fi
-    done
-    if [ "$winner" == "$FALSE" ]; then
-        local -r board_sorted_vertically=$(echo "$board" | sortVertically "$ORDER")
-    for index in {0..2}; do
-        winner=$(echo $board_sorted_vertically | skip $(($index*$ORDER)) | take "$ORDER" | winner)
-        if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="${winner}Wins"
-            break
-        fi
-    done
-    fi
-    if [ "$winner" == "$FALSE" ]; then
-        winner=$(echo "$board" | filterEven | skip 1 | take 3 | winner)
-        if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="${winner}Wins"
-        fi
-    fi
-    if [ "$winner" == "$FALSE" ]; then
-        winner=$(echo "$board" | filterMultipleOfFour | winner)
-        if [ "$winner" != "$FALSE" ]; then
-            arr["$MESSAGE_INDEX"]="${winner}Wins"
-        fi
-    fi
-    echo "${arr[@]}"
+    local -r board_sorted_vertically=$(echo "$board" | sortVertically "$ORDER")
+    local -r diag1=$(echo "$board" | filterEven | skip 1 | take 3)
+    local -r diag2=$(echo "$board" | filterMultipleOfFour)
+    echo $(echo "$board" | winner)
 }
 
 function play {
@@ -174,28 +144,23 @@ function skip {
 }
 
 function winner {
-    local -r n="$1"
-    local -r s=$(read_input)
+    local -r s=$(read_input | take $ORDER)
     local arr
     asArray arr <<< "$s"
     local -r head="${arr[0]}"
     local tail
     asArray tail <<< "${arr[@]:1}"
     if [ "$head" == "$NONE" ]; then
-        echo 'false'
-        return 0
+        echo $(echo $s | skip $ORDER | winner)
     else
         for i in "${tail[@]}"; do
             if [ "$i" != "$head" ]; then
-                echo 'false'
-                return 0
+                echo $(echo $s | skip $ORDER | winner)
             fi
         done
         echo "$head"
-        return 0
     fi
-    echo 'false'
-    return 1
+    echo $(echo $s | skip $ORDER | winner)
 }
 
 function testSkip {
@@ -210,10 +175,10 @@ function testTake {
 }
 
 function testWinner {
-    assert_that $(echo _ _ _ | winner) | is false
-    assert_that $(echo _ X X | winner) | is false
-    assert_that $(echo X X X | winner) | is X
-    assert_that $(echo O O O | winner) | is O
+    assert_that $(echo _ _ _ | winner) | is 0
+    assert_that $(echo _ 1 1 | winner) | is 0
+    assert_that $(echo 1 1 1 | winner) | is 1
+    assert_that $(echo 2 2 2 | winner) | is 2
 }
 
 function sortVertically {
@@ -331,6 +296,7 @@ function testWhenTrue {
 
 function when {
     echo $(($1==0))
+    return 0
 }
 
 function trueFalse {
