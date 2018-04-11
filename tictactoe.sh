@@ -129,15 +129,15 @@ function isEven {
 }
 
 function filter {
-    local arr
-    local returnArr
-    asArray arr <<< $(read_input)
-    for index in {0..8}; do
-        if $(eval "$1" "$index"); then
-            returnArr+=("${arr[$index]}")
-        fi
-    done
-    echo ${returnArr[@]}
+    local -r fn=$1
+    local -r index=${2:-0}
+    local -r input=$(read_input)
+    if $(eval "$fn" "$index"); then
+        printf "%s " "$(echo $input | take 1)"
+    fi
+    if [[ ! -z $(echo $input | skip 1) ]]; then
+        echo $input | skip 1 | filter "$fn" $(($index+1))
+    fi
 }
 
 function count {
