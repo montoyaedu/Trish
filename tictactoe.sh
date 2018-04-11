@@ -7,8 +7,7 @@ readonly CROSS=X
 readonly NOUGHT=O
 readonly ORDER=3
 readonly ROWS="$ORDER"
-readonly MESSAGE_INDEX=10
-readonly NEXT_PLAYER_INDEX=9
+readonly MESSAGE_INDEX=9
 readonly TRUE=true
 readonly FALSE=false
 
@@ -22,12 +21,13 @@ function game {
 }
 
 function nextPlayer {
-    local -r player="$1"
-    if [[ "$player" == "$CROSS" ]]; then
-         echo "$NOUGHT"
-         return 0
+    # if number of placed figures are equal is X turn otherwise is O turn
+    local -r board=$(read_input)
+    if [ $(echo "$board" | count "$CROSS") -eq $(echo "$board" | count "$NOUGHT") ]; then
+        echo "$CROSS"
+    else
+        echo "$NOUGHT"
     fi
-    echo "$CROSS"
 }
 
 function testCanCreateGame {
@@ -35,73 +35,73 @@ function testCanCreateGame {
 }
 
 function testCanPlaceCross {
-    assert_that $(game | play X 0 0) | is "X _ _ _ _ _ _ _ _ O"
+    assert_that $(game | play X 0 0) | is "X _ _ _ _ _ _ _ _"
 }
 
 function testCanPlaceNoughtAfterCross {
-    assert_that $(game | play X 0 0 | play O 1 1) | is "X _ _ _ O _ _ _ _ X"
+    assert_that $(game | play X 0 0 | play O 1 1) | is "X _ _ _ O _ _ _ _"
 }
 
 function testCannotPlaceCrossTwice {
     assert_that $(game | play X 0 0 | play X 1 1) \
-    | is "X _ _ _ _ _ _ _ _ O Error=ItsNotYourTurn"
+    | is "X _ _ _ _ _ _ _ _ Error=ItsNotYourTurn"
 }
 
 function testCannotPlaceNoughtIntoAnOccupiedSpace {
     assert_that $(game | play X 0 0 | play O 0 0) \
-    | is "X _ _ _ _ _ _ _ _ O Error=PlaceOccupied"
+    | is "X _ _ _ _ _ _ _ _ Error=PlaceOccupied"
 }
 
 function testInitialNextPlayer {
-    assert_that $(nextPlayer) | is "X"
+    assert_that $(echo _ _ _ _ _ _ _ _ _ | nextPlayer) | is "X"
 }
 
 function testNextPlayerAfterCross {
-    assert_that $(nextPlayer X) | is "O"
+    assert_that $(echo X _ _ _ _ _ _ _ _ | nextPlayer) | is "O"
 }
 
 function testNextPlayerAfterNought {
-    assert_that $(nextPlayer O) | is "X"
+    assert_that $(echo X O _ _ _ _ _ _ _ | nextPlayer) | is "X"
 }
 
 function testCanDetectWinnerAtFirstRow {
     assert_that $(game | play X 0 0 | play O 1 0 | play X 0 1 | play O 1 1 | play X 0 2 | checkWinner)  \
-    | is "X X X O O _ _ _ _ O Halt=XWins"
+    | is "X X X O O _ _ _ _ Halt=XWins"
 }
 
 function testCanDetectWinnerAtSecondRow {
     assert_that $(game | play X 1 0 | play O 0 0 | play X 1 1 | play O 0 1 | play X 1 2 | checkWinner) \
-    | is "O O _ X X X _ _ _ O Halt=XWins"
+    | is "O O _ X X X _ _ _ Halt=XWins"
 }
 
 function testCanDetectWinnerAtThirdRow {
     assert_that $(game | play X 2 0 | play O 0 0 | play X 2 1 | play O 0 1 | play X 2 2 | checkWinner) \
-    | is "O O _ _ _ _ X X X O Halt=XWins"
+    | is "O O _ _ _ _ X X X Halt=XWins"
 }
 
 function testCanDetectWinnerAtFirstColumn {
     assert_that $(game | play X 0 0 | play O 0 1 | play X 1 0 | play O 1 1 | play X 2 0 | checkWinner) \
-    | is "X O _ X O _ X _ _ O Halt=XWins"
+    | is "X O _ X O _ X _ _ Halt=XWins"
 }
 
 function testCanDetectWinnerAtSecondColumn {
     assert_that $(game | play X 0 1 | play O 0 0 | play X 1 1 | play O 1 0 | play X 2 1 | checkWinner) \
-    | is "O X _ O X _ _ X _ O Halt=XWins"
+    | is "O X _ O X _ _ X _ Halt=XWins"
 }
 
 function testCanDetectWinnerAtThirdColumn {
     assert_that $(game | play X 0 2 | play O 0 0 | play X 1 2 | play O 1 0 | play X 2 2 | checkWinner) \
-    | is "O _ X O _ X _ _ X O Halt=XWins"
+    | is "O _ X O _ X _ _ X Halt=XWins"
 }
 
 function testCanDetectWinnerAtDiagonal1 {
     assert_that $(game | play X 2 0 | play O 0 0 | play X 1 1 | play O 2 2 | play X 0 2 | checkWinner) \
-    | is "O _ X _ X _ X _ O O Halt=XWins"
+    | is "O _ X _ X _ X _ O Halt=XWins"
 }
 
 function testCanDetectWinnerAtDiagonal2 {
     assert_that $(game | play X 0 0 | play O 2 0 | play X 1 1 | play O 0 2 | play X 2 2 | checkWinner) \
-    | is "X _ O _ X _ O _ X O Halt=XWins"
+    | is "X _ O _ X _ O _ X Halt=XWins"
 }
 
 function checkWinner {
@@ -148,11 +148,7 @@ function play {
     local -r column="$3"
     local items
     asArray items <<< "$board"
-    local expectedPlayer="${items[$NEXT_PLAYER_INDEX]}"
-    if [ -z "$expectedPlayer" ]; then
-        expectedPlayer=$(nextPlayer "$expectedPlayer")
-    fi
-    if [ "$player" != "$expectedPlayer" ]; then
+    if [ "$player" != $(echo "$board" | nextPlayer) ]; then
         items["$MESSAGE_INDEX"]="Error=ItsNotYourTurn"
         echo "${items[@]}"
         return 1;
@@ -164,7 +160,6 @@ function play {
         return 1;
     fi
     items[$ROWS*$row+$column]="$player"
-    items["$NEXT_PLAYER_INDEX"]=$(nextPlayer "$player")
     echo "${items[@]}"
 }
 
@@ -312,10 +307,29 @@ function filterEven {
     echo ${returnArr[@]}
 }
 
+function count {
+    local arr
+    asArray arr <<< $(read_input)
+    local count=0
+    declare value
+    for value in ${arr[@]}; do
+        if [[ "$value" == "$1" ]]; then
+            count=$((count+1))
+        fi
+    done
+    echo "$count"
+}
+
+function testCount {
+    assert_that $(echo A A B B C C | count A) | is 2 && \
+    assert_that $(echo A A B B C C | count D) | is 0
+}
+
 function test {
     test_all \
         testCanCreateGame \
         testCanPlaceCross \
+        testCount \
         testInitialNextPlayer \
         testNextPlayerAfterCross \
         testNextPlayerAfterNought \
