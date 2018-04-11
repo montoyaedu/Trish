@@ -20,6 +20,7 @@ Work in progress. some tests are yet failing.
 [PASSED] - can_compare_multiple_word_strings
 [PASSED] - testCanCreateGame
 [PASSED] - testCanPlaceCross
+[PASSED] - testCount
 [PASSED] - testInitialNextPlayer
 [PASSED] - testNextPlayerAfterCross
 [PASSED] - testNextPlayerAfterNought
