@@ -1,6 +1,6 @@
 #!/bin/bash
-PATH=
-CAT=/bin/cat
+readonly PATH=
+readonly CAT=/bin/cat
 function desc {
     if [ "$1" == "0" ]; then
         echo "PASSED"
@@ -30,10 +30,8 @@ function read_input {
 }
 
 function is {
-    local actual
-    local expected
-    actual=$(read_input)
-    expected="${@}"
+    local -r actual=$(read_input)
+    local -r expected="${@}"
     if [ "${actual}" == "${expected}" ]; then
         return 0
     else
@@ -43,9 +41,8 @@ function is {
 }
 
 function assert_that {
-    local actual
-    eval actual="\${@}"
-    echo "$actual"
+    eval local -r a="\${@}"
+    echo "$a"
 }
 
 function id_should_return_input_number {
@@ -57,7 +54,7 @@ function id_should_return_input_string {
 }
 
 function test_all {
-    local tests=( "$@" )
+    local -r tests=( "$@" )
     for i in "${tests[@]}"; do
         eval "$i"
         echo "[`desc $?`] - $i"
