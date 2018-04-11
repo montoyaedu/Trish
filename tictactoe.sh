@@ -3,9 +3,7 @@ readonly NONE=_
 readonly CROSS=1
 readonly NOUGHT=2
 readonly ORDER=3
-readonly ROWS="$ORDER"
 readonly MESSAGE_INDEX=9
-readonly FALSE=0
 
 function asArray {
     local -r IFS=' '
@@ -42,13 +40,13 @@ function play {
         echo "${items[@]}"
         return 1;
     fi
-    local -r value="${items[$ROWS*$row+$column]}"
+    local -r value="${items[$ORDER*$row+$column]}"
     if [ "$value" != "$NONE" ]; then
         items["$MESSAGE_INDEX"]="PlaceOccupied"
         echo ${items[@]}
         return 1;
     fi
-    items[$ROWS*$row+$column]="$player"
+    items[$ORDER*$row+$column]="$player"
     echo "${items[@]}"
 }
 
