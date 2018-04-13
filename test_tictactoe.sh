@@ -128,8 +128,30 @@ function testTrueFalse {
     assert_that $(echo 0 | trueFalse "echo A" "echo B") | is A
 }
 
+function testHasMoreTrue {
+    hasMore 1 2 3
+    local -r r=$?
+    assert_that "$r" | is 0
+}
+
+function testHasMoreFalse {
+    hasMore 1
+    local -r r=$?
+    assert_that "$r" | is 1
+}
+
+function testLength {
+    assert_that $(echo 1 2 3 | length) | is 3 && \
+    assert_that $(echo 2 3 | length) | is 2 && \
+    assert_that $(echo 3 | length) | is 1 && \
+    assert_that $(echo | length) | is 0 
+}
+
 function test {
     test_all \
+        testLength \
+        testHasMoreTrue \
+        testHasMoreFalse \
         testTrueFalse \
         testWhenTrue \
         testWhenFalse \

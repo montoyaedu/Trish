@@ -16,6 +16,9 @@ tic-tac-toe implemented in Bash using kinda pseudo functional style with self co
 [PASSED] - id_should_return_input_string
 [PASSED] - id_should_return_input_number
 [PASSED] - can_compare_multiple_word_strings
+[PASSED] - testLength
+[PASSED] - testHasMoreTrue
+[PASSED] - testHasMoreFalse
 [PASSED] - testTrueFalse
 [PASSED] - testWhenTrue
 [PASSED] - testWhenFalse
@@ -25,8 +28,10 @@ tic-tac-toe implemented in Bash using kinda pseudo functional style with self co
 [PASSED] - testInitialNextPlayer
 [PASSED] - testNextPlayerAfterCross
 [PASSED] - testNextPlayerAfterNought
+Not your turn
 [PASSED] - testCannotPlaceCrossTwice
 [PASSED] - testCanPlaceNoughtAfterCross
+Place is not available
 [PASSED] - testCannotPlaceNoughtIntoAnOccupiedSpace
 [PASSED] - testSkip
 [PASSED] - testTake

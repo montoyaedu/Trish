@@ -31,13 +31,17 @@ function read_input {
     "${CAT}" -
 }
 
+function debug {
+    $(>&2 echo $@)
+}
+
 function is {
     local -r actual=$(read_input)
     local -r expected="${@}"
     if [ "${actual}" == "${expected}" ]; then
         return 0
     else
-        $(>&2 echo "expected '${expected}' but got '${actual}'")
+        debug "expected '${expected}' but got '${actual}'"
         return 1
     fi
 }

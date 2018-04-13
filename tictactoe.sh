@@ -30,13 +30,13 @@ function play {
     local items=($board)
     if [ "$player" != $(echo "$board" | nextPlayer) ]; then
         echo "${items[@]}"
-        $(>&2 echo "Not your turn")
+        $(debug "Not your turn")
         return 1;
     fi
     local -r value="${items[$ORDER*$row+$column]}"
     if [ "$value" != "$NONE" ]; then
         echo ${items[@]}
-        $(>&2 echo "Place is not available")
+        $(debug "Place is not available")
         return 1;
     fi
     items[$ORDER*$row+$column]="$player"
@@ -117,6 +117,15 @@ function isEven {
     return $(($1%2))
 }
 
+function length {
+    local -r arr=($(read_input))
+    echo ${#arr[@]}
+}
+
+function hasMore {
+    return $(($(echo "$@" | skip 1 | length)<=0))
+}
+
 function filter {
     local -r fn=$1
     local -r index=${2:-0}
@@ -124,7 +133,7 @@ function filter {
     if $(eval "$fn" "$index"); then
         printf "%s " "$(echo $input | take 1)"
     fi
-    if [[ ! -z $(echo $input | skip 1) ]]; then
+    if hasMore $input; then
         echo $input | skip 1 | filter "$fn" $(($index+1))
     fi
 }
