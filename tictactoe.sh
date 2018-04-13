@@ -4,11 +4,6 @@ readonly CROSS=1
 readonly NOUGHT=2
 readonly ORDER=3
 
-function asArray {
-    local -r IFS=' '
-    read -r -a "$1"
-}
-
 function game {
     echo _ _ _ _ _ _ _ _ _
 }
@@ -32,8 +27,7 @@ function play {
     local -r player="$1"
     local -r row="$2"
     local -r column="$3"
-    local items
-    asArray items <<< "$board"
+    local items=($board)
     if [ "$player" != $(echo "$board" | nextPlayer) ]; then
         echo "${items[@]}"
         $(>&2 echo "Not your turn")
@@ -51,15 +45,13 @@ function play {
 
 function take {
     local -r n="$1"
-    local arr
-    asArray arr <<< $(read_input)
+    local -r arr=($(read_input))
     echo "${arr[@]::$n}"
 }
 
 function skip {
     local -r n="$1"
-    local arr
-    asArray arr <<< $(read_input)
+    local -r arr=($(read_input))
     echo "${arr[@]:$n}"
 }
 
@@ -71,8 +63,7 @@ function winner {
         echo $(echo $orig | skip $ORDER | winner)
         return 1
     fi
-    local tail
-    asArray tail <<< $(echo $s | skip 1)
+    local -r tail=($(echo $s | skip 1))
     for i in "${tail[@]}"; do
         if [ "$i" != "$head" ]; then
             echo $(echo $orig | skip $ORDER | winner)
@@ -84,9 +75,8 @@ function winner {
 }
 
 function sortVertically {
-    local arr
     local returnArr
-    asArray arr <<< $(read_input | take $(($ORDER*$ORDER)))
+    local -r arr=($(read_input | take $(($ORDER*$ORDER))))
     for index in {0..8}; do
        local item="${arr[$index]}"
        returnArr["$index"]=$(sortItem "$index" "${arr[@]}")
@@ -95,8 +85,7 @@ function sortVertically {
 }
 
 function sortItem {
-    local arr
-    asArray arr <<< $(echo "$@" | skip 1)
+    local arr=($(echo "$@" | skip 1))
     local -r i="$1"
     if isMultipleOfFour "$i"; then
         echo "${arr[$i]}"
