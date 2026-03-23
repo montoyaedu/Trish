@@ -25,6 +25,10 @@ function testCannotPlaceNoughtIntoAnOccupiedSpace {
     | is "1 _ _ _ _ _ _ _ _"
 }
 
+function testCannotPlaceNoughtFirst {
+    assert_that $(game | play 2 0 0) | is "_ _ _ _ _ _ _ _ _"
+}
+
 function testInitialNextPlayer {
     assert_that $(echo _ _ _ _ _ _ _ _ _ | nextPlayer) | is "1"
 }
@@ -77,15 +81,37 @@ function testCanDetectWinnerAtDiagonal2 {
     | is 1
 }
 
+function testCanDetectNoughtWinner {
+    assert_that $(game | play 1 0 0 | play 2 1 0 | play 1 0 1 | play 2 1 1 | play 1 2 2 | play 2 1 2 | checkWinner) \
+    | is 2
+}
+
+function testNoWinnerYet {
+    assert_that "$(game | play 1 0 0 | play 2 1 1 | checkWinner)" | is ''
+}
+
+function testDraw {
+    assert_that "$(game | play 1 0 0 | play 2 0 1 | play 1 0 2 | play 2 1 1 | play 1 1 0 | play 2 1 2 | play 1 2 1 | play 2 2 0 | play 1 2 2 | checkWinner)" \
+    | is ''
+}
+
 function testSkip {
     assert_that $(echo AAA BBB CCC DDD | skip 1) | is "BBB CCC DDD"
     assert_that $(echo AAA BBB CCC DDD | skip 3) | is "DDD"
+}
+
+function testSkipZero {
+    assert_that $(echo AAA BBB CCC | skip 0) | is "AAA BBB CCC"
 }
 
 function testTake {
     assert_that $(echo AAA BBB CCC DDD | take 1) | is "AAA"
     assert_that $(echo AAA BBB CCC DDD | take 3) | is "AAA BBB CCC"
     assert_that $(echo AAA BBB CCC DDD | take 4) | is "AAA BBB CCC DDD"
+}
+
+function testTakeZero {
+    assert_that "$(echo AAA BBB CCC | take 0)" | is ''
 }
 
 function testWinner {
@@ -101,6 +127,30 @@ function testSortVertically {
 
 function testSortVerticallyAlpha {
     assert_that $(echo A B C D E F G H I | sortVertically) | is "A D G B E H C F I"
+}
+
+function testSortItemMultipleOfFour {
+    assert_that $(sortItem 0 A B C D E F G H I) | is "A"
+}
+
+function testSortItemEven {
+    assert_that $(sortItem 2 A B C D E F G H I) | is "G"
+}
+
+function testSortItemOdd {
+    assert_that $(sortItem 1 A B C D E F G H I) | is "D"
+}
+
+function testNearestLower4Multiple {
+    assert_that $(nearestLower4Multiple 1) | is 0 && \
+    assert_that $(nearestLower4Multiple 3) | is 0 && \
+    assert_that $(nearestLower4Multiple 5) | is 4
+}
+
+function testNearestHigher4Multiple {
+    assert_that $(nearestHigher4Multiple 1) | is 4 && \
+    assert_that $(nearestHigher4Multiple 3) | is 4 && \
+    assert_that $(nearestHigher4Multiple 5) | is 8
 }
 
 function testFilterEven {
@@ -128,6 +178,10 @@ function testTrueFalse {
     assert_that $(echo 0 | trueFalse "echo A" "echo B") | is A
 }
 
+function testTrueFalseBranchTwo {
+    assert_that $(echo 1 | trueFalse "echo A" "echo B") | is B
+}
+
 function testHasMoreTrue {
     hasMore 1 2 3
     local -r r=$?
@@ -153,6 +207,7 @@ function test {
         testHasMoreTrue \
         testHasMoreFalse \
         testTrueFalse \
+        testTrueFalseBranchTwo \
         testWhenTrue \
         testWhenFalse \
         testCanCreateGame \
@@ -164,21 +219,32 @@ function test {
         testCannotPlaceCrossTwice \
         testCanPlaceNoughtAfterCross \
         testCannotPlaceNoughtIntoAnOccupiedSpace \
+        testCannotPlaceNoughtFirst \
         testSkip \
+        testSkipZero \
         testTake \
+        testTakeZero \
         testWinner \
         testCanDetectWinnerAtFirstRow \
         testCanDetectWinnerAtSecondRow \
         testCanDetectWinnerAtThirdRow \
         testSortVertically \
         testSortVerticallyAlpha \
+        testSortItemMultipleOfFour \
+        testSortItemEven \
+        testSortItemOdd \
+        testNearestLower4Multiple \
+        testNearestHigher4Multiple \
         testCanDetectWinnerAtFirstColumn \
         testCanDetectWinnerAtSecondColumn \
         testCanDetectWinnerAtThirdColumn \
         testFilterEven \
         testCanDetectWinnerAtDiagonal1 \
         testFilterMultipleOfFour \
-        testCanDetectWinnerAtDiagonal2
+        testCanDetectWinnerAtDiagonal2 \
+        testCanDetectNoughtWinner \
+        testNoWinnerYet \
+        testDraw
 }
 
 test
