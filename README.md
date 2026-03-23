@@ -291,30 +291,46 @@ that maps to _someone wins_, _draw_, _invalid input_.
 
 ## Similar projects and useful resources
 
+### Functional programming libraries for Bash
+
+| Project | URL | Notes |
+|---|---|---|
+| **ssledz/bash-fun** | https://github.com/ssledz/bash-fun | The most complete FP library for Bash: `map`, `filter`, `foldl`, `foldr`, `zip`, `maybe` (Option type), `try/catch`, lambda syntax (`λ`). Closest reference for what this project is exploring — see also the [slide deck](https://ssledz.github.io/presentations/bash-fun.html) |
+| **spencertipping/bash-lambda** | https://github.com/spencertipping/bash-lambda | Extreme end: adds real anonymous functions, closures, partial application, futures, and mark/sweep GC to Bash. Useful for understanding what closures would look like if Bash had them natively |
+| **sharkdp/shell-functools** | https://github.com/sharkdp/shell-functools | `map`, `filter`, `foldl`, `sort_by`, `take_while` as standalone UNIX commands composable via pipes — models the exact pipe-as-composition pattern used here |
+| **timonson/bashFunc** | https://github.com/timonson/bashFunc | Lighter-weight: map, filter, reduce in pure Bash; good as a minimal reference implementation |
+
 ### Bash testing frameworks
 
 | Project | URL | Notes |
 |---|---|---|
-| **Bats** | https://github.com/sstephenson/bats | Most widely used; TAP-compliant output; natural fit for TDD on shell scripts |
+| **bats-core/bats-core** | https://github.com/bats-core/bats-core | Community-maintained successor to bats; TAP-compliant; TDD RED→GREEN→REFACTOR tutorial built-in; ecosystem includes `bats-assert`, `bats-mock`. Most widely used for TDD-style Bash testing |
+| **bash_unit** | https://github.com/pgrange/bash_unit | Tests written in pure Bash (no DSL); `setup`/`teardown` hooks; closest analog to Python `unittest`. Best fit for a project where both tests and implementation are plain shell |
 | **shUnit2** | https://github.com/kward/shunit2 | xUnit-style (`assertEquals`); familiar to JUnit/PyUnit users |
-| **ShellSpec** | https://shellspec.info/comparison.html | Side-by-side framework comparison; great for choosing the right tool |
-| **testing-in-bash** | https://github.com/dodie/testing-in-bash | Same tests written in multiple frameworks; practical reference |
+| **ShellSpec** | https://shellspec.info/ | BDD-style (RSpec for Bash); built-in mocking, parameterized tests, coverage, parallel execution |
+| **dodie/testing-in-bash** | https://github.com/dodie/testing-in-bash | Side-by-side comparison: same tests written in bats, shunit2, bash_unit, ShellSpec, shpec — best starting point for choosing a framework |
 
 ### Tic-tac-toe in Bash
 
 | Project | URL | Notes |
 |---|---|---|
-| **justineuro/tic-tac-toe** | https://github.com/justineuro/tic-tac-toe | Two-player, terminal colours; good reference for board rendering |
-| **TicTacToe-Players (minimax)** | https://github.com/andrewgph/TicTacToe-Players | Recursive minimax AI in Bash; technically closest to this project's recursive style |
+| **justineuro/tic-tac-toe** | https://github.com/justineuro/tic-tac-toe | Two-player, terminal colours; reference for board rendering |
+| **TicTacToe-Players (minimax)** | https://github.com/andrewgph/TicTacToe-Players | Recursive minimax AI in Bash; closest to this project's recursive style |
 
-### Functional programming in Bash
+> **Gap worth noting:** existing Bash tic-tac-toe implementations are all imperative
+> with no tests. A functionally-styled, TDD-driven implementation like this one
+> fills a real gap in the space.
+
+### Articles on FP in Bash and Unix pipelines
 
 | Resource | URL | Notes |
 |---|---|---|
-| **Functional Programming in Bash** | https://scalastic.io/en/bash-functional-programming/ | Covers pure functions, immutability, higher-order `map` in Bash |
-| **Collection Pipeline — Martin Fowler** | https://martinfowler.com/articles/collection-pipeline/ | Canonical article on filter/map/reduce that Unix pipes directly implement |
-| **FP is Like Unix Pipelines** | https://alvinalexander.com/scala/fp-book/how-functional-programming-is-like-unix-pipelines/ | Explains the conceptual mapping between pipes and function composition |
-| **I want my Bash Pipe** | https://dev.to/xtofl/i-want-my-bash-pipe-34i2 | Practical patterns for chaining transformations in shell — directly applicable here |
+| **Functional Programming in Bash (2024)** | https://scalastic.io/en/bash-functional-programming/ | Covers pure functions, immutability, lazy evaluation, higher-order functions — with concrete examples |
+| **FP in Bash — Medium** | https://joydeep31415.medium.com/functional-programming-in-bash-145b6db336b7 | Approachable intro to pipe-based composition and passing function names as arguments |
+| **Collection Pipeline — Martin Fowler** | https://martinfowler.com/articles/collection-pipeline/ | Canonical article on filter/map/reduce; Unix pipes directly implement this pattern |
+| **FP is Like Unix Pipelines** | https://alvinalexander.com/scala/fp-book/how-functional-programming-is-like-unix-pipelines/ | Explains the direct conceptual mapping between pipes and function composition |
+| **I want my Bash Pipe** | https://dev.to/xtofl/i-want-my-bash-pipe-34i2 | Practical patterns for chaining transformations in shell |
+| **Testing Bash with Bats — Opensource.com** | https://opensource.com/article/19/2/testing-bash-bats | Solid introduction to the TDD cycle with bats; applicable approach to this project |
 
 ---
 
