@@ -22,6 +22,13 @@ function checkWinner {
     echo $(echo "$board $board_sorted_vertically $diag1 $diag2" | winner)
 }
 
+function checkDraw {
+    local -r board=$(read_input)
+    local -r count_none=$(echo "$board" | count "$NONE")
+    local -r has_winner=$(echo "$board" | checkWinner)
+    when $(($count_none==0 && ${#has_winner}==0)) | trueFalse "echo draw" "echo"
+}
+
 function play {
     local -r board=$(read_input)
     local -r player="$1"

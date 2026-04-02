@@ -95,6 +95,12 @@ function testDraw {
     | is ''
 }
 
+function testCheckDraw {
+    assert_that "$(game | play 1 0 0 | play 2 0 1 | play 1 0 2 | play 2 1 1 | play 1 1 0 | play 2 1 2 | play 1 2 1 | play 2 2 0 | play 1 2 2 | checkDraw)" \
+    | is 'draw' && \
+    assert_that "$(game | play 1 0 0 | play 2 1 1 | checkDraw)" | is ''
+}
+
 function testSkip {
     assert_that $(echo AAA BBB CCC DDD | skip 1) | is "BBB CCC DDD"
     assert_that $(echo AAA BBB CCC DDD | skip 3) | is "DDD"
@@ -244,7 +250,8 @@ function test {
         testCanDetectWinnerAtDiagonal2 \
         testCanDetectNoughtWinner \
         testNoWinnerYet \
-        testDraw
+        testDraw \
+        testCheckDraw
 }
 
 test
