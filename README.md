@@ -1,6 +1,6 @@
 # Trish — Tic-Tac-Toe in Bash
 
-> Tic-tac-toe implemented in Bash using a pseudo-functional style with self-contained TDD tools.
+> Tic-tac-toe implemented in Bash using a pseudo-functional style with self-contained TDD tools. Trish is an intentionally weird Bash tic-tac-toe experiment: functional style, pipe composition, self-contained tests, and just enough bad ideas to teach why they are bad. You write it Trish but you can actually trash it! XD
 
 ---
 
